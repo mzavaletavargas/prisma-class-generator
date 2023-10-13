@@ -1,8 +1,3 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator clent {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x", "darwin"]
@@ -15,53 +10,175 @@ generator prismaClassGenerator {
   separateRelationFields = "false"
 }
 
-enum ProductType {
-  A
-  B
-  C
+// generator prismaClassGenerator {
+//   provider = "prisma-class-generator"
+//   useSwagger = true
+//   dryRun = false
+//   // separateRelationFields= true
+//   output   = "../src/@generated"
+// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-enum ProductAnotherType {
-  AA
-  BB
-  CC
+model Field {
+  pk                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String
+  description           String?
+  imageUrl              String?
+  professionFieldTarget ProfessionFieldTarget[]
 }
 
-model Product {
-  id            Int                @id
-  title         String             @db.VarChar(255)
-  desc          String             @default("abc") @db.VarChar(1024)
-  images        Json               @db.Json
-  isShown       Boolean?           @default(false)
-  stock         Int?               @default(0)
-  type          ProductType
-  anotherType   ProductAnotherType @default(AA)
-  averageRating Float?
-  categoryId    Int
-  companyId     Int
-  category      Category           @relation(fields: [categoryId], references: [id])
-  company       Company            @relation(fields: [companyId], references: [id])
-  createdAt     DateTime           @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime           @updatedAt @db.Timestamp(6)
+model Profession {
+  pk                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String
+  description           String?
+  imageUrl              String
+  professionFieldTarget ProfessionFieldTarget[]
 }
 
-model Category {
-  id       Int       @id
-  products Product[]
+model Target {
+  pk                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String
+  description           String?
+  imageUrl              String?
+  professionFieldTarget ProfessionFieldTarget[]
 }
 
-model Company {
-  id                      Int       @id
-  name                    String
-  totalIncome             BigInt    @default(100)
-  lat                     Decimal
-  lng                     Decimal
-  by                      Bytes
-  products                Product[]
-  tags                    String[]
-  tagsWithEmptyDefault    String[]  @default([])
-  tagsWithDefault         String[]  @default(["a", "b"])
-  numTags                 Int[]
-  numTagsWithEmptyDefault Int[]     @default([])
-  numTagsWithDefault      Int[]     @default([1, 2])
+model ProfessionFieldTarget {
+  pk            String     @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  displayName   String?
+  professionId  String     @db.Uuid
+  fieldId       String     @db.Uuid
+  targetId      String     @db.Uuid
+  hiredCounter  Int?       @default(0)
+  avgHourlyRate Float?     @default(0)
+  imageUrl      String?
+  description   String?
+  gig           Gig[]
+  field         Field      @relation(fields: [fieldId], references: [pk])
+  profession    Profession @relation(fields: [professionId], references: [pk])
+  target        Target     @relation(fields: [targetId], references: [pk])
+
+  @@id([professionId, fieldId, targetId])
+}
+
+model Country {
+  id          Int        @id @default(autoincrement())
+  name        String
+  utfName     String
+  alpha2Code  String
+  alpha3Code  String
+  numericCode String
+  callingCode String
+  provinces   Province[]
+}
+
+model Province {
+  id        Int     @id @default(autoincrement())
+  name      String
+  code      String?
+  countryId Int
+  cities    City[]
+  country   Country @relation(fields: [countryId], references: [id])
+}
+
+model City {
+  id           Int            @id @default(autoincrement())
+  name         String
+  code         String?
+  provinceId   Int
+  address      Address[]
+  province     Province       @relation(fields: [provinceId], references: [id])
+  gigsOnCities GigsOnCities[]
+}
+
+model Address {
+  pk               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customName       String
+  details          String?
+  googlePlaceId    String?
+  latitude         String?
+  longitude        String?
+  streetNumber     String?
+  formattedAddress String?
+  locality         String?
+  sublocality      String?
+  area             String?
+  country          String?
+  postalCode       String?
+  apartment        String?
+  reference        String?
+  default          Boolean
+  cityId           Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  cities           City     @relation(fields: [cityId], references: [id])
+  user             User?
+}
+
+model User {
+  pk             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName      String
+  secondName     String?
+  firstLastName  String
+  secondLastName String?
+  email          String
+  phoneNumber    String
+  username       String?
+  addressId      String    @unique @db.Uuid
+  customer       Customer?
+  provider       Provider?
+  address        Address   @relation(fields: [addressId], references: [pk])
+}
+
+model Customer {
+  pk          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  verified    Boolean @default(false)
+  banned      Boolean @default(false)
+  ratingCount Int
+  ratingSum   Int
+  imageUrl    String
+  userId      String  @unique @db.Uuid
+  user        User    @relation(fields: [userId], references: [pk])
+}
+
+model Provider {
+  pk          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  verified    Boolean @default(false)
+  banned      Boolean @default(false)
+  ratingCount Int
+  ratingSum   Int
+  imageUrl    String
+  slogan      String
+  description String
+  userId      String  @unique @db.Uuid
+  gig         Gig[]
+  user        User    @relation(fields: [userId], references: [pk])
+}
+
+model Gig {
+  pk                      String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title                   String
+  description             String
+  imageUrl                String
+  ratingSum               Int
+  ratingCount             Int
+  archived                Boolean
+  providerId              String                @db.Uuid
+  professionFieldTargetId String                @db.Uuid
+  professionFieldTarget   ProfessionFieldTarget @relation(fields: [professionFieldTargetId], references: [pk])
+  provider                Provider              @relation(fields: [providerId], references: [pk])
+  gigsOnCities            GigsOnCities[]
+}
+
+model GigsOnCities {
+  gigId  String @db.Uuid
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id])
+  gig    Gig    @relation(fields: [gigId], references: [pk])
+
+  @@id([gigId, cityId])
 }

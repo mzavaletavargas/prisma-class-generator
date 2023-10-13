@@ -33,6 +33,7 @@
 		"email": "kimjbstar@gmail.com"
 	},
 	"dependencies": {
+		"@nestjs/swagger": "^7.1.13",
 		"@prisma/client": "^4.12.0",
 		"@prisma/generator-helper": "^4.12.0",
 		"@prisma/internals": "^4.12.0",
