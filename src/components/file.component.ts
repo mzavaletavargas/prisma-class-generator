@@ -49,7 +49,7 @@ export class FileComponent implements Echoable {
 		const { classComponent, output } = input
 		this._prismaClass = classComponent
 		this.dir = path.resolve(output)
-		this.filename = `${snakeCase(classComponent.name)}.ts`
+		this.filename = `${snakeCase(classComponent.name)}.entity.ts`
 		this.resolveImports()
 	}
 
@@ -83,7 +83,7 @@ export class FileComponent implements Echoable {
 		const generator = PrismaClassGenerator.getInstance()
 		this.prismaClass.relationTypes.forEach((relationClassName) => {
 			this.registerImport(
-				`${relationClassName}`,
+				`${relationClassName}Entity`,
 				FileComponent.TEMP_PREFIX + relationClassName,
 			)
 		})

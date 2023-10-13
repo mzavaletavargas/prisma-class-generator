@@ -11,7 +11,7 @@ class ClassComponent extends base_component_1.BaseComponent {
         this.echo = () => {
             const fieldContent = this.fields.map((_field) => _field.echo());
             let str = class_template_1.CLASS_TEMPLATE.replace('#!{DECORATORS}', this.echoDecorators())
-                .replace('#!{NAME}', `${this.name}`)
+                .replace('#!{NAME}', `${this.name}Entity`)
                 .replace('#!{FIELDS}', fieldContent.join('\r\n'))
                 .replace('#!{EXTRA}', this.extra);
             return str;

@@ -88,7 +88,7 @@ class PrismaConvertor {
             }
             type = dmmfField.type.toString();
             if (dmmfField.relationName) {
-                options.type = (0, util_1.wrapArrowFunction)(dmmfField);
+                options.type = (0, util_1.wrapArrowFunction)(dmmfField) + 'Entity';
                 decorator.params.push(options);
                 return decorator;
             }
@@ -241,7 +241,7 @@ class PrismaConvertor {
                 field.type = type;
             }
             else {
-                field.type = dmmfField.type;
+                field.type = dmmfField.type + 'Entity';
             }
             if (dmmfField.isList) {
                 field.type = (0, util_1.arrayify)(field.type);

@@ -64,12 +64,12 @@ exports.PrismaClassGeneratorOptions = {
     },
     useNonNullableAssertions: {
         desc: 'applies non-nullable assertions (!) to class properties',
-        defaultValue: false
+        defaultValue: false,
     },
     preserveDefaultNullable: {
         defaultValue: false,
-        desc: 'preserve default nullable behavior'
-    }
+        desc: 'preserve default nullable behavior',
+    },
 };
 class PrismaClassGenerator {
     constructor(options) {

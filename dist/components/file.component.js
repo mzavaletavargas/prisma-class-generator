@@ -72,7 +72,7 @@ class FileComponent {
         const { classComponent, output } = input;
         this._prismaClass = classComponent;
         this.dir = path.resolve(output);
-        this.filename = `${(0, change_case_1.snakeCase)(classComponent.name)}.ts`;
+        this.filename = `${(0, change_case_1.snakeCase)(classComponent.name)}.entity.ts`;
         this.resolveImports();
     }
     registerImport(item, from) {
@@ -86,7 +86,7 @@ class FileComponent {
     resolveImports() {
         const generator = generator_1.PrismaClassGenerator.getInstance();
         this.prismaClass.relationTypes.forEach((relationClassName) => {
-            this.registerImport(`${relationClassName}`, FileComponent.TEMP_PREFIX + relationClassName);
+            this.registerImport(`${relationClassName}Entity`, FileComponent.TEMP_PREFIX + relationClassName);
         });
         this.prismaClass.enumTypes.forEach((enumName) => {
             this.registerImport(enumName, generator.getClientImportPath());

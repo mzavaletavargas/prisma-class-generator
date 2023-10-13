@@ -7,7 +7,7 @@ generator prismaClassGenerator {
   provider               = "node -r ts-node/register/transpile-only src/index.ts"
   output                 = "../src/_gen/prisma-class"
   dryRun                 = "false"
-  separateRelationFields = "false"
+  separateRelationFields = "true"
 }
 
 // generator prismaClassGenerator {

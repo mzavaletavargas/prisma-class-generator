@@ -17,7 +17,7 @@ export class ClassComponent extends BaseComponent implements Echoable {
 			'#!{DECORATORS}',
 			this.echoDecorators(),
 		)
-			.replace('#!{NAME}', `${this.name}`)
+			.replace('#!{NAME}', `${this.name}Entity`)
 			.replace('#!{FIELDS}', fieldContent.join('\r\n'))
 			.replace('#!{EXTRA}', this.extra)
 
