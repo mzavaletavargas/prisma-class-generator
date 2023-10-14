@@ -92,7 +92,6 @@ exports.toArray = toArray;
 const writeTSFile = (fullPath, content, dryRun = true) => {
     (0, exports.log)(`${dryRun ? '[dryRun] ' : ''}Generate ${fullPath}`);
     if (dryRun) {
-        console.log(content);
         return;
     }
     const dirname = path.dirname(fullPath);

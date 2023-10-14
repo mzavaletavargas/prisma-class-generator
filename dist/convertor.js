@@ -93,8 +93,6 @@ class PrismaConvertor {
                 return decorator;
             }
             if (dmmfField.kind === 'enum') {
-                console.log(options);
-                console.log(dmmfField);
                 options.enum = dmmfField.type;
                 options.enumName = (0, util_1.wrapQuote)(dmmfField);
             }
