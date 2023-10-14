@@ -172,6 +172,7 @@ export class PrismaConvertor {
 
 		if (dmmfField.relationName) {
 			options.type = wrapArrowFunction(dmmfField) + 'Entity'
+
 			decorator.params.push(options)
 			return decorator
 		}
@@ -384,6 +385,8 @@ export class PrismaConvertor {
 
 		if (type) {
 			field.type = type
+		} else if (dmmfField.kind === 'enum') {
+			field.type = dmmfField.type
 		} else {
 			field.type = dmmfField.type + 'Entity'
 		}

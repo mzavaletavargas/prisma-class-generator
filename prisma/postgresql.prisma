@@ -4,10 +4,10 @@ generator clent {
 }
 
 generator prismaClassGenerator {
-  provider               = "node -r ts-node/register/transpile-only src/index.ts"
-  output                 = "../src/_gen/prisma-class"
-  dryRun                 = "false"
-  separateRelationFields = "true"
+  provider = "node -r ts-node/register/transpile-only src/index.ts"
+  output   = "../src/_gen/prisma-class"
+  dryRun   = "false"
+  // separateRelationFields = "true"
 }
 
 // generator prismaClassGenerator {
@@ -24,19 +24,19 @@ datasource db {
 }
 
 model Field {
-  pk                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                  String
-  description           String?
-  imageUrl              String?
-  professionFieldTarget ProfessionFieldTarget[]
+  pk              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  description     String?
+  imageUrl        String?
+  ProfessionField ProfessionField[]
 }
 
 model Profession {
-  pk                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name                  String
-  description           String?
-  imageUrl              String
-  professionFieldTarget ProfessionFieldTarget[]
+  pk              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  description     String?
+  imageUrl        String
+  ProfessionField ProfessionField[]
 }
 
 model Target {
@@ -47,22 +47,34 @@ model Target {
   professionFieldTarget ProfessionFieldTarget[]
 }
 
-model ProfessionFieldTarget {
+model ProfessionField {
   pk            String     @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  displayName   String?
   professionId  String     @db.Uuid
-  fieldId       String     @db.Uuid
-  targetId      String     @db.Uuid
+  displayName   String
+  description   String?
+  imageUrl      String?
   hiredCounter  Int?       @default(0)
   avgHourlyRate Float?     @default(0)
-  imageUrl      String?
-  description   String?
-  gig           Gig[]
+  fieldId       String     @db.Uuid
   field         Field      @relation(fields: [fieldId], references: [pk])
   profession    Profession @relation(fields: [professionId], references: [pk])
-  target        Target     @relation(fields: [targetId], references: [pk])
 
-  @@id([professionId, fieldId, targetId])
+  professionFieldTarget ProfessionFieldTarget[]
+  gig                   Gig[]
+  gigQuestion           GigQuestion[]
+}
+
+model ProfessionFieldTarget {
+  pk       String  @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  targetId String  @db.Uuid
+  imageUrl String?
+  // gig      Gig[]
+  target   Target  @relation(fields: [targetId], references: [pk])
+
+  professionField   ProfessionField @relation(fields: [professionFieldId], references: [pk])
+  professionFieldId String          @db.Uuid
+
+  @@id([professionFieldId, targetId])
 }
 
 model Country {
@@ -160,18 +172,23 @@ model Provider {
 }
 
 model Gig {
-  pk                      String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title                   String
-  description             String
-  imageUrl                String
-  ratingSum               Int
-  ratingCount             Int
-  archived                Boolean
-  providerId              String                @db.Uuid
-  professionFieldTargetId String                @db.Uuid
-  professionFieldTarget   ProfessionFieldTarget @relation(fields: [professionFieldTargetId], references: [pk])
-  provider                Provider              @relation(fields: [providerId], references: [pk])
-  gigsOnCities            GigsOnCities[]
+  pk          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String
+  imageUrl    String
+  ratingSum   Int
+  ratingCount Int
+  archived    Boolean
+
+  professionField   ProfessionField @relation(fields: [professionFieldId], references: [pk])
+  professionFieldId String          @db.Uuid
+  providerId        String          @db.Uuid
+  // professionFieldTargetId String                @db.Uuid
+  // professionFieldTarget   ProfessionFieldTarget @relation(fields: [professionFieldTargetId], references: [pk])
+  provider          Provider        @relation(fields: [providerId], references: [pk])
+  gigsOnCities      GigsOnCities[]
+
+  @@unique([providerId, professionFieldId])
 }
 
 model GigsOnCities {
@@ -181,4 +198,27 @@ model GigsOnCities {
   gig    Gig    @relation(fields: [gigId], references: [pk])
 
   @@id([gigId, cityId])
+}
+
+enum GigQuestionType {
+  SELECT
+  TEXT
+  CHECKBOX
+}
+
+model GigQuestion {
+  pk                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text              String
+  type              GigQuestionType
+  order             Int
+  gigQuestionOption GigQuestionOption[]
+  professionField   ProfessionField     @relation(fields: [professionFieldId], references: [pk])
+  professionFieldId String              @db.Uuid
+}
+
+model GigQuestionOption {
+  pk            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  option        String
+  gigQuestion   GigQuestion @relation(fields: [gigQuestionId], references: [pk])
+  gigQuestionId String      @db.Uuid
 }

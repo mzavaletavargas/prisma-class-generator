@@ -76,7 +76,6 @@ export const writeTSFile = (
 ) => {
 	log(`${dryRun ? '[dryRun] ' : ''}Generate ${fullPath}`)
 	if (dryRun) {
-		console.log(content)
 		return
 	}
 	const dirname = path.dirname(fullPath)
